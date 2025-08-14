@@ -1,0 +1,25 @@
+server.port: 8080
+spring:
+  kafka:
+    bootstrap-servers: localhost:29092
+    consumer:
+      group-id: ai-service
+      properties:
+        spring.json.trusted.packages: "*"
+    template:
+      default-topic: ai.responses.v1
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  ai:
+    ollama:
+      base-url: http://localhost:11434
+#      chat.options.model: gemma3:4b
+      chat.options.model: gpt-oss:20b
+      embedding.options.model: nomic-embed-text
+    vectorstore:
+      qdrant:
+        host: localhost
+        port: 6334
+        collection-name: rag_docs
+        initialize-schema: true
+management.endpoints.web.exposure.include: health,info,prometheus

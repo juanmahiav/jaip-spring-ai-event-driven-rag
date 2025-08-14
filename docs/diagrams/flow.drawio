@@ -1,0 +1,119 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.6 Chrome/138.0.7204.100 Electron/37.2.3 Safari/537.36" version="28.0.6">
+  <diagram name="Page-1" id="G4hfKMQgciIUIVxDUBTF">
+    <mxGraphModel dx="3474" dy="2574" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="TrSyfTQ1MSr6hM8fxGjb-1" target="TrSyfTQ1MSr6hM8fxGjb-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-1" value="CLIENT&lt;br&gt;(console producer, UI, test script, etc.)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="533" y="270" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="TrSyfTQ1MSr6hM8fxGjb-2" target="TrSyfTQ1MSr6hM8fxGjb-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-2" value="Kafka Topic (in)&lt;div&gt;ai.request.v1&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="534" y="390" width="158" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-4" value="&lt;div&gt;1) PRODUCE ChatRequest (JSON)&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="623" y="340" width="210" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="TrSyfTQ1MSr6hM8fxGjb-5" target="TrSyfTQ1MSr6hM8fxGjb-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-5" value="&lt;div&gt;AI SERVICE&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="473" y="520" width="280" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-6" value="&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;@KafkaListener(ai.requests.v1)&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;2) RETRIEVE context via VectorStore&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;font color=&quot;rgba(0, 0, 0, 0)&quot;&gt;&amp;nbsp; &amp;nbsp; &lt;/font&gt;(Qdrant via vector-service / Spring AI)&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;3)&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; text-align: center;&quot;&gt;REASON&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; text-align: center;&quot;&gt;Ollama (gpt-oss:20b) via Spring AI&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;color: rgba(0, 0, 0, 0); background-color: transparent;&quot;&gt;&amp;nbsp; &amp;nbsp;&lt;/span&gt;&lt;span style=&quot;color: rgba(0, 0, 0, 0); background-color: transparent;&quot;&gt;&amp;nbsp;&lt;/span&gt;(Build prompt from user + retrieved context)&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;div&gt;4a) If NO tool needed:&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: rgba(0, 0, 0, 0);&quot;&gt;&amp;nbsp; &amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgba(0, 0, 0, 0);&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgba(0, 0, 0, 0);&quot;&gt;&amp;nbsp; &amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgba(0, 0, 0, 0);&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;BUILD → ChatResponse JSON&lt;/span&gt;&lt;/div&gt;&lt;span style=&quot;background-color: transparent; color: rgba(0, 0, 0, 0);&quot;&gt;&amp;nbsp; &amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgba(0, 0, 0, 0);&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgba(0, 0, 0, 0);&quot;&gt;&amp;nbsp; &amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgba(0, 0, 0, 0);&quot;&gt;&amp;nbsp;&lt;/span&gt;PRODUCE → ChatResponse JSON&lt;div&gt;&amp;nbsp;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;4b) If tool IS needed:&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: rgba(0, 0, 0, 0);&quot;&gt;&amp;nbsp; &amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgba(0, 0, 0, 0);&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgba(0, 0, 0, 0);&quot;&gt;&amp;nbsp; &amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgba(0, 0, 0, 0);&quot;&gt;&amp;nbsp;&lt;/span&gt;PRODUCE →&amp;nbsp;ToolCall JSON&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="470" y="560" width="280" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-8" value="(Kafka delivers)" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="623" y="460" width="95" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-11" value="&lt;div&gt;CLIENT CONSUMER&lt;br&gt;(console-consumer, edge-gateway/WS)&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;Message shown/returned to user&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="488" y="1270" width="250" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="TrSyfTQ1MSr6hM8fxGjb-16" target="TrSyfTQ1MSr6hM8fxGjb-21">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="370" y="1100" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-16" value="Does the model &lt;br&gt;request a tool?&amp;nbsp;" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="548" y="880" width="130" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-17" value="4a) NO tool needed" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="488" y="1020" width="122" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-21" value="Kafka Topic (out)&lt;div&gt;ai.responses.v1&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="534" y="1100" width="158" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="TrSyfTQ1MSr6hM8fxGjb-21" target="TrSyfTQ1MSr6hM8fxGjb-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="TrSyfTQ1MSr6hM8fxGjb-23" target="TrSyfTQ1MSr6hM8fxGjb-29">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-23" value="&lt;div&gt;Kafka Topic (tools)&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;ai.tool.calls.v1&amp;nbsp;&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="840" y="905" width="158" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="TrSyfTQ1MSr6hM8fxGjb-16" target="TrSyfTQ1MSr6hM8fxGjb-23">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="579.9979999999998" y="955" as="sourcePoint" />
+            <mxPoint x="828.05" y="931.96" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-27" value="&lt;span style=&quot;text-align: left;&quot;&gt;4b) Tool needed&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="694" y="900" width="122" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-28" value="&lt;span style=&quot;text-align: left;&quot;&gt;(Kafka delivers to any consumer)&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="488" y="1190" width="122" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="TrSyfTQ1MSr6hM8fxGjb-29" target="TrSyfTQ1MSr6hM8fxGjb-32">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-29" value="&lt;div&gt;TOOL SERVICE&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="913" y="1050" width="297" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-30" value="&lt;div style=&quot;text-align: left;&quot;&gt;@KafkaListener(ai.tool.calls.v1)&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;div&gt;5) EXECUTE TOOL (MCP or HTTP/WebClient call)&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;6) PRODUCE → ToolResult JSON&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&amp;nbsp;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="920" y="1090" width="280" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-32" value="&lt;div&gt;Kafka Topic (tool results)&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp; ai.tool.results.v1&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="982.5" y="1310" width="158" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-34" value="&lt;span style=&quot;text-align: left;&quot;&gt;(Kafka delivers)&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="930" y="970" width="122" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-35" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;AI SERVICE&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="920" y="1470" width="297" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" target="TrSyfTQ1MSr6hM8fxGjb-38">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1069" y="1640" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-36" value="&lt;div style=&quot;text-align: left;&quot;&gt;@KafkaListener(ai.tool.results.v1)&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;div&gt;7) FINALIZE ANSWER → use tool RESULT + model&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;8) PRODUCE → ChatResponse JSON&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="927" y="1520" width="283" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.476;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="TrSyfTQ1MSr6hM8fxGjb-32" target="TrSyfTQ1MSr6hM8fxGjb-35">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-41" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="TrSyfTQ1MSr6hM8fxGjb-38" target="TrSyfTQ1MSr6hM8fxGjb-40">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-38" value="Kafka Topic (out)&lt;div&gt;ai.responses.v1&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="989.5" y="1720" width="158" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-40" value="&lt;div&gt;CLIENT CONSUMER&lt;br&gt;(console-consumer, edge-gateway/WS)&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;Message shown/returned to user&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="943.5" y="1870" width="250" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-42" value="&lt;span style=&quot;text-align: left;&quot;&gt;(Kafka delivers to any consumer)&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="943.5" y="1810" width="122" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="TrSyfTQ1MSr6hM8fxGjb-43" value="&lt;span style=&quot;text-align: left;&quot;&gt;(Kafka delivers)&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1052" y="1400" width="122" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

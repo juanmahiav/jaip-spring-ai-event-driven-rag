@@ -1,0 +1,6 @@
+{
+  "A1234": { "orderId": "A1234", "status": "SHIPPED", "total": 129.90,
+    "items": [ {"sku":"S-001","qty":2}, {"sku":"S-099","qty":1} ] },
+  "B7788": { "orderId": "B7788", "status": "PENDING", "total": 49.00,
+    "items": [ {"sku":"S-010","qty":1} ] }
+}

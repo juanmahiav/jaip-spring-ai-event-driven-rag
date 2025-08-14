@@ -1,0 +1,4 @@
+server.port: 8083
+spring.kafka.bootstrap-servers: localhost:29092
+spring.kafka.consumer.group-id: edge-gateway
+spring.kafka.consumer.properties.spring.json.trusted.packages: "*"

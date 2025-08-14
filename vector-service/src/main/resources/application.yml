@@ -1,0 +1,13 @@
+server.port: 8081
+spring:
+  ai:
+    ollama:
+      base-url: http://localhost:11434
+      embedding.options.model: nomic-embed-text
+    vectorstore:
+      qdrant:
+        host: localhost
+        port: 6334
+        collection-name: rag_docs
+        initialize-schema: true
+management.endpoints.web.exposure.include: health,info,prometheus
