@@ -4,6 +4,8 @@ import com.beanvisionary.common.ToolCall;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 final class ToolParsing {
@@ -18,5 +20,14 @@ final class ToolParsing {
             Map<String,Object> args = n.has("args") ? M.convertValue(n.get("args"), new TypeReference<>(){}) : Map.of();
             return new ToolCall(name, args);
         } catch (Exception e) { return null; }
+    }
+    
+    static List<ToolCall> extractToolCalls(String content) {
+        List<ToolCall> toolCalls = new ArrayList<>();
+        ToolCall toolCall = maybeParseTool(content);
+        if (toolCall != null) {
+            toolCalls.add(toolCall);
+        }
+        return toolCalls;
     }
 }

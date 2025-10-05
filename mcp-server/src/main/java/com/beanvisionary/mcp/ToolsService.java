@@ -2,7 +2,6 @@ package com.beanvisionary.mcp;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -39,22 +38,41 @@ public class ToolsService {
     }
 
     public Map<String, Object> checkSanctions(String name) {
+        System.out.println("=== SANCTIONS CHECK DEBUG ===");
+        System.out.println("Input name: '" + name + "'");
+        System.out.println("Sanctions list: " + sanctions);
+        
         boolean hit = Optional.ofNullable(name)
                 .map(String::toLowerCase)
-                .map(n -> sanctions.stream().anyMatch(s -> s.contains(n) || n.contains(s)))
+                .map(n -> {
+                    System.out.println("Lowercase name: '" + n + "'");
+                    boolean foundMatch = sanctions.stream().anyMatch(s -> {
+                        boolean contains = s.contains(n) || n.contains(s);
+                        System.out.println("Checking '" + s + "' against '" + n + "' -> " + contains);
+                        return contains;
+                    });
+                    System.out.println("Overall match result: " + foundMatch);
+                    return foundMatch;
+                })
                 .orElse(false);
-        return Map.of(
+        
+        Map<String, Object> result = Map.of(
                 "match", hit,
                 "score", hit ? 0.95 : 0.02,
                 "rule", hit ? "contains" : "no-hit"
         );
+        System.out.println("Final result: " + result);
+        System.out.println("=== END SANCTIONS CHECK DEBUG ===");
+        
+        return result;
     }
 
-    @SneakyThrows
     private <T> T readJson(ObjectMapper om, String cp, TypeReference<T> ref) {
         try (InputStream is = getClass().getResourceAsStream(cp)) {
             if (is == null) throw new IllegalStateException("Missing resource: " + cp);
             return om.readValue(is, ref);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to read JSON resource: " + cp, e);
         }
     }
 }
