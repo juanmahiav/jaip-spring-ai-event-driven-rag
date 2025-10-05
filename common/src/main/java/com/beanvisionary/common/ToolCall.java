@@ -15,6 +15,11 @@ public class ToolCall {
         this.args = args;
     }
 
+    public ToolCall(String name, Map<String, Object> args, String requestId) {
+        this.name = name;
+        this.args = args;
+        this.requestId = requestId;
+    }
     public String getRequestId() {
         return requestId;
     }
