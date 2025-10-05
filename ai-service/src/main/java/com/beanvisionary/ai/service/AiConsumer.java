@@ -30,6 +30,7 @@ public class AiConsumer {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final String defaultTopic;
     private final CustomOllamaService customOllamaService;
+    private final ObjectMapper objectMapper;
 
     public AiConsumer(
             VectorStore vectorStore,
@@ -43,7 +44,6 @@ public class AiConsumer {
         this.defaultTopic = defaultTopic;
         this.objectMapper = objectMapper;
     }
-    private final ObjectMapper objectMapper;
 
     @KafkaListener(topics = "ai.requests.v1", groupId = "ai-service")
     public void handle(ChatRequest chatRequest) {
