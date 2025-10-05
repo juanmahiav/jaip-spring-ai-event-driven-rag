@@ -1,6 +1,8 @@
 package com.beanvisionary.gateway;
 
 import com.beanvisionary.common.ChatRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +16,8 @@ import static com.beanvisionary.common.KafkaTopics.AI_REQUESTS;
 @CrossOrigin(origins = {"http://localhost:8000", "http://127.0.0.1:8000"}, allowedHeaders = {"Content-Type","Authorization","Accept"}, methods = {RequestMethod.POST, RequestMethod.OPTIONS})
 @RequestMapping("/api/chat")
 public class ChatIngestController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ChatIngestController.class);
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
@@ -54,15 +58,14 @@ public class ChatIngestController {
                 Instant.now()
         );
 
-        System.out.println("DEBUG: Sending message to Kafka topic: " + AI_REQUESTS);
-        System.out.println("DEBUG: Message content: " + event);
+        logger.debug("Sending message to Kafka topic: {}", AI_REQUESTS);
+        logger.debug("Message content: {}", event);
 
         try {
             kafkaTemplate.send(AI_REQUESTS, requestId, event);
-            System.out.println("DEBUG: Message sent successfully");
+            logger.debug("Message sent successfully");
         } catch (Exception e) {
-            System.err.println("DEBUG: Error sending message: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error sending message: {}", e.getMessage(), e);
         }
 
         return new IngestResponse(requestId, sessionId, "/topic/replies." + sessionId, "QUEUED");

@@ -17,8 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -123,22 +121,6 @@ public class AiConsumer {
         .replace('‘', '"')
         .replace('’', '"');
     return cleaned;
-    }
-
-    private String extractField(String raw, String field) {
-        if (raw == null) return null;
-        try {
-            Pattern p = Pattern.compile("\\\"" + Pattern.quote(field) + "\\\"\\s*:\\s*\\\"([^\\\"]*)\\\"");
-            Matcher m = p.matcher(raw);
-            if (m.find()) return m.group(1);
-        } catch (Exception ignored) { }
-        return null;
-    }
-
-    private String removeFieldUnsafe(String json, String field) {
-
-        String regex = "\\\"" + Pattern.quote(field) + "\\\"\\s*:\\s*(\\\"[^\\\"]*\\\"|[0-9.]+)\\s*,?";
-        return json.replaceAll(regex, "");
     }
 
     private String buildSystemPrompt(String context) {

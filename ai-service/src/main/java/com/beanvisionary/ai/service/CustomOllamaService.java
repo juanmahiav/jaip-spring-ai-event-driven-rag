@@ -1,6 +1,7 @@
 package com.beanvisionary.ai.service;
 
 import com.beanvisionary.common.ToolCall;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -142,7 +143,7 @@ public class CustomOllamaService {
                                         if (argumentsJson == null || argumentsJson.trim().isEmpty()) {
                                             arguments = Map.of();
                                         } else {
-                                            arguments = objectMapper.readValue(argumentsJson, Map.class);
+                                            arguments = objectMapper.readValue(argumentsJson, new TypeReference<Map<String, Object>>() {});
                                         }
                                         ToolCall toolCall = new ToolCall(toolName, arguments);
                                         detectedToolCalls.add(toolCall);
