@@ -164,13 +164,15 @@ public class CustomOllamaService {
                                 responseContent.append(fragment);
                             } else {
 
-                                String currentContent = responseContent.toString();
-                                if (fragment.startsWith(currentContent)) {
+                                // Avoid repeated toString() calls by comparing directly with StringBuilder content
+                                if (fragment.length() >= currentLength &&
+                                        fragment.regionMatches(0, responseContent, 0, currentLength)) {
 
                                     if (fragment.length() > currentLength) {
                                         responseContent.append(fragment.substring(currentLength));
                                     }
-                                } else if (!currentContent.endsWith(fragment)) {
+                                } else if (!(currentLength >= fragment.length() &&
+                                        responseContent.subSequence(currentLength - fragment.length(), currentLength).equals(fragment))) {
                                     responseContent.append(fragment);
                                 }
                             }
