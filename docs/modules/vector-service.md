@@ -1,8 +1,9 @@
 # Vector Service
 
 ## Overview
-The Vector Service is ### API Endpoints
+The Vector Service is a RESTful API that enables storing, managing, and searching vector embeddings for text documents. It uses Ollama's nomic-embed-text model to generate embeddings and stores them in a Qdrant vector database. The service provides endpoints for upserting documents and performing semantic search based on text queries.
 
+### API Endpoints
 ### Upsert Documents
 ```http
 POST /vectors/upsert
