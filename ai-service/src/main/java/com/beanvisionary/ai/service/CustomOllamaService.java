@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -68,7 +69,7 @@ public class CustomOllamaService {
             );
 
             String response = restClient.post()
-                    .uri(baseUrl + "/api/chat")
+                    .uri(UriComponentsBuilder.fromHttpUrl(baseUrl).path("/api/chat").build().toUri())
                     .body(requestBody)
                     .retrieve()
                     .body(String.class);
@@ -110,7 +111,7 @@ public class CustomOllamaService {
         List<ToolCall> detectedToolCalls = new ArrayList<>();
         
         try {
-            restClient.post().uri(baseUrl + "/api/chat").body(requestBody).exchange((req, resp) -> {
+            restClient.post().uri(UriComponentsBuilder.fromHttpUrl(baseUrl).path("/api/chat").build().toUri()).body(requestBody).exchange((req, resp) -> {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(resp.getBody(), StandardCharsets.UTF_8))) {
                     String line;
                     while ((line = reader.readLine()) != null) {

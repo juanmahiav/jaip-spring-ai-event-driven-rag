@@ -33,4 +33,8 @@ spring:
         port: 6334
         collection-name: rag_docs
         initialize-schema: true
+app:
+  cleanup:
+    interval-ms: 300000
+    expiration-time-ms: 3600000
 management.endpoints.web.exposure.include: health,info,prometheus

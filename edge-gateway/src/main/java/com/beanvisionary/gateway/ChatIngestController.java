@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import static com.beanvisionary.common.KafkaTopics.AI_REQUESTS;
 
@@ -18,6 +19,7 @@ import static com.beanvisionary.common.KafkaTopics.AI_REQUESTS;
 public class ChatIngestController {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatIngestController.class);
+    private static final Pattern VALID_SESSION_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9_-]{1,64}$");
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
@@ -43,7 +45,9 @@ public class ChatIngestController {
     @PostMapping
     public IngestResponse ingest(@RequestBody IngestRequest body) {
         String requestId = body.requestId() != null && !body.requestId().isBlank() ? body.requestId() : UUID.randomUUID().toString();
-        String sessionId = body.sessionId() != null && !body.sessionId().isBlank() ? body.sessionId() : "default";
+        String rawSessionId = body.sessionId() != null && !body.sessionId().isBlank() ? body.sessionId() : "default";
+        
+        String sessionId = validateAndSanitizeSessionId(rawSessionId);
 
         if (body.query() == null || body.query().isBlank()) {
             return new IngestResponse(requestId, sessionId, "/topic/replies." + sessionId, "REJECTED_EMPTY_QUERY");
@@ -69,5 +73,18 @@ public class ChatIngestController {
         }
 
         return new IngestResponse(requestId, sessionId, "/topic/replies." + sessionId, "QUEUED");
+    }
+    
+    private String validateAndSanitizeSessionId(String sessionId) {
+        if (sessionId == null || sessionId.isBlank()) {
+            return "default";
+        }
+        
+        if (VALID_SESSION_ID_PATTERN.matcher(sessionId).matches()) {
+            return sessionId;
+        }
+        
+        logger.warn("Invalid sessionId format detected: '{}'. Using 'default' instead.", sessionId);
+        return "default";
     }
 }

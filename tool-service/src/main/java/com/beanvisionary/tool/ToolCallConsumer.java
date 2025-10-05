@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static com.beanvisionary.common.KafkaTopics.AI_TOOL_CALLS;
 import static com.beanvisionary.common.KafkaTopics.AI_TOOL_RESULTS;
@@ -26,7 +27,7 @@ public class ToolCallConsumer {
         String tool = (String) msg.get("tool");
         Map<String, Object> args = (Map<String, Object>) msg.get("args");
 
-        Map<String, Object> safeArgs = args != null ? args : Map.of();
+        Map<String, Object> safeArgs = Optional.ofNullable(args).orElse(Map.of());
 
         Map<String, Object> result = mcp.post()
                 .uri("/mcp/tools/{tool}", tool)

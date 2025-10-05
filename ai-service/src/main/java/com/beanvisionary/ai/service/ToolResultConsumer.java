@@ -5,6 +5,7 @@ import com.beanvisionary.common.ToolCall;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,9 +23,9 @@ import static com.beanvisionary.common.KafkaTopics.AI_TOOL_RESULTS;
 @Component
 public class ToolResultConsumer {
     private static final Logger logger = LoggerFactory.getLogger(ToolResultConsumer.class);
-    private static final long CLEANUP_INTERVAL_MS = 300_000;
-    private static final long EXPIRATION_TIME_MS = 3600_000;
     
+    private final long cleanupIntervalMs;
+    private final long expirationTimeMs;
     private final ChatClient chat;
     private final KafkaTemplate<String, ChatResponse> producer;
     
@@ -32,9 +33,15 @@ public class ToolResultConsumer {
     
     private final Map<String, RequestContextEntry> requestContext = new ConcurrentHashMap<>();
 
-    public ToolResultConsumer(ChatClient chat, KafkaTemplate<String, ChatResponse> producer) {
+    public ToolResultConsumer(
+            ChatClient chat, 
+            KafkaTemplate<String, ChatResponse> producer,
+            @Value("${app.cleanup.interval-ms:300000}") long cleanupIntervalMs,
+            @Value("${app.cleanup.expiration-time-ms:3600000}") long expirationTimeMs) {
         this.chat = chat;
         this.producer = producer;
+        this.cleanupIntervalMs = cleanupIntervalMs;
+        this.expirationTimeMs = expirationTimeMs;
     }
     
     private record ProcessedRequestEntry(Map<String, Object> result, long timestamp) {}
@@ -45,10 +52,10 @@ public class ToolResultConsumer {
         logger.info("Stored context for request {}: userId={}, sessionId={}", requestId, userId, sessionId);
     }
 
-    @Scheduled(fixedRate = CLEANUP_INTERVAL_MS)
+    @Scheduled(fixedRateString = "${app.cleanup.interval-ms:300000}")
     public void cleanupExpiredEntries() {
         long currentTime = System.currentTimeMillis();
-        long expirationThreshold = currentTime - EXPIRATION_TIME_MS;
+        long expirationThreshold = currentTime - expirationTimeMs;
         
         boolean processedRemoved = processedRequests.entrySet().removeIf(entry -> 
             entry.getValue().timestamp() < expirationThreshold);
