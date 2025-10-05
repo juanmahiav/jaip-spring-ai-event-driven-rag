@@ -1,6 +1,5 @@
 package com.beanvisionary.mcp;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,10 +7,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/mcp/tools", produces = MediaType.APPLICATION_JSON_VALUE)
-@RequiredArgsConstructor
 public class ToolsController {
 
     private final ToolsService svc;
+
+    public ToolsController(ToolsService svc) {
+        this.svc = svc;
+    }
 
     @PostMapping("/{tool}")
     public Map<String, Object> call(@PathVariable("tool") String tool,

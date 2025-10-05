@@ -2,7 +2,8 @@ package com.beanvisionary.mcp;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -11,6 +12,8 @@ import java.util.*;
 
 @Service
 public class ToolsService {
+    private static final Logger logger = LoggerFactory.getLogger(ToolsService.class);
+    
     private final Map<String, Map<String, Object>> orders = new HashMap<>();
     private final List<String> sanctions = new ArrayList<>();
     private final SecureRandom rnd = new SecureRandom();
@@ -39,22 +42,43 @@ public class ToolsService {
     }
 
     public Map<String, Object> checkSanctions(String name) {
+        logger.debug("=== SANCTIONS CHECK DEBUG ===");
+        logger.debug("Input name: '{}'", name);
+        logger.debug("Sanctions list: {}", sanctions);
+        
         boolean hit = Optional.ofNullable(name)
                 .map(String::toLowerCase)
-                .map(n -> sanctions.stream().anyMatch(s -> s.contains(n) || n.contains(s)))
+                .map(n -> {
+                    logger.debug("Lowercase name: '{}'", n);
+                    boolean foundMatch = sanctions.stream().anyMatch(s -> {
+                        boolean contains = s.contains(n) || n.contains(s);
+                        logger.debug("Checking '{}' against '{}' -> {}", s, n, contains);
+                        return contains;
+                    });
+                    logger.debug("Overall match result: {}", foundMatch);
+                    return foundMatch;
+                })
                 .orElse(false);
-        return Map.of(
+        
+        Map<String, Object> result = Map.of(
                 "match", hit,
                 "score", hit ? 0.95 : 0.02,
                 "rule", hit ? "contains" : "no-hit"
         );
+        logger.debug("Final result: {}", result);
+        logger.debug("=== END SANCTIONS CHECK DEBUG ===");
+        
+        return result;
     }
 
-    @SneakyThrows
     private <T> T readJson(ObjectMapper om, String cp, TypeReference<T> ref) {
         try (InputStream is = getClass().getResourceAsStream(cp)) {
             if (is == null) throw new IllegalStateException("Missing resource: " + cp);
             return om.readValue(is, ref);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            throw new RuntimeException("Failed to parse JSON from resource: " + cp, e);
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("I/O error reading JSON resource: " + cp, e);
         }
     }
 }

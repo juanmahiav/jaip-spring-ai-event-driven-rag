@@ -4,22 +4,37 @@ spring:
     bootstrap-servers: localhost:29092
     consumer:
       group-id: ai-service
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       properties:
-        spring.json.trusted.packages: "*"
+        session.timeout.ms: 30000
+        heartbeat.interval.ms: 10000
     template:
       default-topic: ai.responses.v1
     producer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.type.mapping: chatresponse:com.beanvisionary.common.ChatResponse,chatrequest:com.beanvisionary.common.ChatRequest
   ai:
     ollama:
       base-url: http://localhost:11434
-#      chat.options.model: gemma3:4b
-      chat.options.model: gpt-oss:20b
-      embedding.options.model: nomic-embed-text
+      chat:
+        options:
+          model: gpt-oss:120b-cloud
+        streaming: false
+      embedding:
+        options:
+          model: nomic-embed-text
     vectorstore:
       qdrant:
         host: localhost
         port: 6334
         collection-name: rag_docs
         initialize-schema: true
+app:
+  cleanup:
+    interval-ms: 300000
+    expiration-time-ms: 3600000
 management.endpoints.web.exposure.include: health,info,prometheus

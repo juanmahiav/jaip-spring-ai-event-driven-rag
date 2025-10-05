@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Event RAG Chat Demo (SockJS focus)</title>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 1.5rem; }
+    #log { border: 1px solid #ccc; padding: .75rem; height: 340px; overflow-y: auto; background: #fafafa; white-space: pre-line; }
+    #response { border: 1px solid #0a5; padding: .75rem; margin-top: 1rem; background: #e8f5e9; white-space: pre-line; }
+    .partial { color: #555; font-style: italic; }
+    .final { color: #0a5; font-weight: 600; }
+    .meta { font-size: .7rem; opacity: .65; }
+    label { display:block; margin-top: .75rem; }
+    input[type=text] { width: 440px; }
+    button { margin-top: 1rem; }
+  </style>
+</head>
+<body>
+<h2>Event-Driven RAG Chat (SockJS)</h2>
+<p>Connect → Send query → Stream appears below. Using /ws-sockjs only for troubleshooting.</p>
+<section>
+  <label>Session ID <input id="sessionId" type="text" value="session-1"/></label>
+  <label>User ID <input id="userId" type="text" value="user-1"/></label>
+  <label>Query <input id="query" type="text" value="What is Qdrant based on the information you have?"/></label>
+  <button id="connectBtn">Connect (SockJS)</button>
+  <button id="sendBtn" disabled>Send Query</button>
+</section>
+<h3>Stream Log</h3>
+<div id="log">(idle)</div>
+
+<h3>Real-time Response</h3>
+<div id="response" style="border: 1px solid #ccc; padding: .75rem; min-height: 100px; overflow-y: auto; background: #f0f8ff; white-space: pre-wrap;"></div>
+<script>
+let stompClient = null;
+let connected = false;
+let currentResponse = '';
+
+function log(line, cls) {
+  const c = document.getElementById('log');
+  const div = document.createElement('div');
+  if (cls) div.className = cls;
+  div.textContent = new Date().toISOString() + ' | ' + line;
+  c.appendChild(div);
+  c.scrollTop = c.scrollHeight;
+}
+
+function updateResponseBox(content) {
+  const responseBox = document.getElementById('response');
+  if (responseBox) {
+    responseBox.textContent = content;
+  }
+}
+
+function connectSock() {
+  if (connected) { log('Already connected','meta'); return; }
+  const sessionId = document.getElementById('sessionId').value || 'default';
+  log('Creating SockJS("/ws-sockjs") instance','meta');
+  const sock = new SockJS('http://localhost:8083/ws-sockjs');
+  sock.onopen = () => log('SockJS raw connection open','meta');
+  sock.onclose = e => log('SockJS closed: ' + JSON.stringify(e),'meta');
+  sock.onerror = e => log('SockJS error (raw): ' + e,'partial');
+  stompClient = Stomp.over(sock);
+  stompClient.debug = msg => log('[STOMP] ' + msg,'meta');
+  log('Calling STOMP connect','meta');
+  stompClient.connect({}, frame => {
+    connected = true;
+    log('STOMP connected: ' + frame,'meta');
+    const destination = '/topic/replies.' + sessionId;
+    log('Subscribing ' + destination,'meta');
+    stompClient.subscribe(destination, m => {
+      try {
+        const payload = JSON.parse(m.body);
+        const ans = payload.answer || '';
+        if (ans.startsWith('[partial]')) {
+          log('[partial] ' + ans.replace('[partial]','').trim(),'partial');
+
+          currentResponse += ans.replace('[partial]','').trim();
+          updateResponseBox(currentResponse);
+        } else {
+          log(ans,'final');
+
+          currentResponse = ans;
+          updateResponseBox(currentResponse);
+        }
+      } catch (e) { 
+        log('Bad JSON: ' + m.body,'partial');
+
+        updateResponseBox(m.body);
+      }
+    });
+    document.getElementById('sendBtn').disabled = false;
+  }, err => {
+    log('STOMP connect error: ' + err,'partial');
+  });
+}
+
+document.getElementById('connectBtn').addEventListener('click', connectSock);
+
+document.getElementById('sendBtn').addEventListener('click', () => {
+  if (!connected) return log('Not connected','partial');
+  const query = document.getElementById('query').value.trim();
+  if (!query) return;
+  const userId = document.getElementById('userId').value.trim() || 'user-1';
+  const sessionId = document.getElementById('sessionId').value.trim() || 'default';
+  
+  currentResponse = '';
+  updateResponseBox('');
+  
+  log('POST /api/chat','meta');
+  fetch('http://localhost:8083/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId, sessionId, query })
+  }).then(r => r.json())
+    .then(r => log('Queued request: ' + r.requestId,'meta'))
+    .catch(e => log('Ingest error: ' + e,'partial'));
+});
+</script>
+</body>
+</html>

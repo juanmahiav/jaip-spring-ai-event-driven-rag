@@ -1,6 +1,5 @@
 package com.beanvisionary.tool;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -8,15 +7,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static com.beanvisionary.common.KafkaTopics.AI_TOOL_CALLS;
 import static com.beanvisionary.common.KafkaTopics.AI_TOOL_RESULTS;
 
 @Service
-@RequiredArgsConstructor
 public class ToolCallConsumer {
     private final KafkaTemplate<String, Map<String, Object>> producer;
     private final WebClient mcp = WebClient.builder().baseUrl("http://localhost:8091").build();
+
+    public ToolCallConsumer(KafkaTemplate<String, Map<String, Object>> producer) {
+        this.producer = producer;
+    }
 
     @KafkaListener(topics = AI_TOOL_CALLS, groupId = "tool-service")
     public void handle(Map<String, Object> msg) {
@@ -24,13 +27,20 @@ public class ToolCallConsumer {
         String tool = (String) msg.get("tool");
         Map<String, Object> args = (Map<String, Object>) msg.get("args");
 
+        Map<String, Object> safeArgs = Optional.ofNullable(args).orElse(Map.of());
+
         Map<String, Object> result = mcp.post()
                 .uri("/mcp/tools/{tool}", tool)
-                .bodyValue(args)
+                .bodyValue(safeArgs)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .block();
 
-        producer.send(AI_TOOL_RESULTS, Map.of("requestId", requestId, "tool", tool, "result", result));
+        producer.send(AI_TOOL_RESULTS, Map.of(
+            "requestId", requestId, 
+            "tool", tool, 
+            "args", safeArgs,
+            "result", result
+        ));
     }
 }
