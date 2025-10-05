@@ -75,8 +75,10 @@ public class ToolsService {
         try (InputStream is = getClass().getResourceAsStream(cp)) {
             if (is == null) throw new IllegalStateException("Missing resource: " + cp);
             return om.readValue(is, ref);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to read JSON resource: " + cp, e);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            throw new RuntimeException("Failed to parse JSON from resource: " + cp, e);
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("I/O error reading JSON resource: " + cp, e);
         }
     }
 }
