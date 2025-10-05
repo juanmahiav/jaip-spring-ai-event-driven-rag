@@ -173,7 +173,9 @@ public class CustomOllamaService {
 
                             if (!detectedToolCalls.isEmpty()) {
                                 bestToolCall = detectedToolCalls.get(0);
-                                logger.info("Using Ollama-detected tool call: {} with args: {}", bestToolCall.name(), bestToolCall.args());
+                                if (bestToolCall != null) {
+                                    logger.info("Using Ollama-detected tool call: {} with args: {}", bestToolCall.name(), bestToolCall.args());
+                                }
                             }
 
                             if (bestToolCall != null && (bestToolCall.args() == null || bestToolCall.args().isEmpty())) {
