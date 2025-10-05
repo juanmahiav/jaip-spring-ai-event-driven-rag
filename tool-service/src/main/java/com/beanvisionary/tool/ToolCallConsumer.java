@@ -26,9 +26,11 @@ public class ToolCallConsumer {
         String tool = (String) msg.get("tool");
         Map<String, Object> args = (Map<String, Object>) msg.get("args");
 
+        Map<String, Object> safeArgs = args != null ? args : Map.of();
+
         Map<String, Object> result = mcp.post()
                 .uri("/mcp/tools/{tool}", tool)
-                .bodyValue(args)
+                .bodyValue(safeArgs)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .block();
@@ -36,7 +38,7 @@ public class ToolCallConsumer {
         producer.send(AI_TOOL_RESULTS, Map.of(
             "requestId", requestId, 
             "tool", tool, 
-            "args", args,
+            "args", safeArgs,
             "result", result
         ));
     }

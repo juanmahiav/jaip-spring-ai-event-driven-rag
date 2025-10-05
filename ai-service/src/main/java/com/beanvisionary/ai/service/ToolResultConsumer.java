@@ -22,16 +22,14 @@ import static com.beanvisionary.common.KafkaTopics.AI_TOOL_RESULTS;
 @Component
 public class ToolResultConsumer {
     private static final Logger logger = LoggerFactory.getLogger(ToolResultConsumer.class);
-    private static final long CLEANUP_INTERVAL_MS = 300_000; // 5 minutes
-    private static final long EXPIRATION_TIME_MS = 3600_000; // 1 hour
+    private static final long CLEANUP_INTERVAL_MS = 300_000;
+    private static final long EXPIRATION_TIME_MS = 3600_000;
     
     private final ChatClient chat;
     private final KafkaTemplate<String, ChatResponse> producer;
     
-    // Store processed requests with timestamp for cleanup
     private final Map<String, ProcessedRequestEntry> processedRequests = new ConcurrentHashMap<>();
     
-    // Store request context with timestamp for cleanup
     private final Map<String, RequestContextEntry> requestContext = new ConcurrentHashMap<>();
 
     public ToolResultConsumer(ChatClient chat, KafkaTemplate<String, ChatResponse> producer) {
@@ -39,7 +37,6 @@ public class ToolResultConsumer {
         this.producer = producer;
     }
     
-    // Data classes for tracking entries with timestamps
     private record ProcessedRequestEntry(Map<String, Object> result, long timestamp) {}
     private record RequestContextEntry(String userId, String sessionId, long timestamp) {}
     
@@ -48,27 +45,20 @@ public class ToolResultConsumer {
         logger.info("Stored context for request {}: userId={}, sessionId={}", requestId, userId, sessionId);
     }
 
-    // Scheduled cleanup task to prevent memory leaks
     @Scheduled(fixedRate = CLEANUP_INTERVAL_MS)
     public void cleanupExpiredEntries() {
         long currentTime = System.currentTimeMillis();
         long expirationThreshold = currentTime - EXPIRATION_TIME_MS;
         
-        // Cleanup processed requests
-        int processedBefore = processedRequests.size();
-        processedRequests.entrySet().removeIf(entry -> 
+        boolean processedRemoved = processedRequests.entrySet().removeIf(entry -> 
             entry.getValue().timestamp() < expirationThreshold);
-        int processedAfter = processedRequests.size();
         
-        // Cleanup request contexts
-        int contextBefore = requestContext.size();
-        requestContext.entrySet().removeIf(entry -> 
+        boolean contextRemoved = requestContext.entrySet().removeIf(entry -> 
             entry.getValue().timestamp() < expirationThreshold);
-        int contextAfter = requestContext.size();
         
-        if (processedBefore != processedAfter || contextBefore != contextAfter) {
-            logger.info("Cleanup completed: processedRequests {} -> {}, requestContext {} -> {}", 
-                       processedBefore, processedAfter, contextBefore, contextAfter);
+        if (processedRemoved || contextRemoved) {
+            logger.info("Cleanup completed: removed expired entries from maps (processedRequests: {}, requestContext: {})", 
+                       processedRemoved ? "yes" : "no", contextRemoved ? "yes" : "no");
         }
     }
 
@@ -140,7 +130,6 @@ public class ToolResultConsumer {
         ProcessedRequestEntry existingEntry = processedRequests.get(requestId);
         
         if (existingEntry == null) {
-            // No existing result, process this one
             return true;
         }
         

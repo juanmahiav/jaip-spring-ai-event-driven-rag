@@ -158,18 +158,19 @@ public class CustomOllamaService {
                         
                         String fragment = messageNode.path("content").asText("");
                         if (!fragment.isEmpty()) {
-                            // Optimize string operations to avoid repeated toString() calls
+
                             int currentLength = responseContent.length();
                             if (currentLength == 0) {
                                 responseContent.append(fragment);
                             } else {
-                                String current = responseContent.toString();
-                                if (fragment.startsWith(current)) {
-                                    // Only append the new part (delta)
+
+                                String currentContent = responseContent.toString();
+                                if (fragment.startsWith(currentContent)) {
+
                                     if (fragment.length() > currentLength) {
                                         responseContent.append(fragment.substring(currentLength));
                                     }
-                                } else if (!current.endsWith(fragment)) {
+                                } else if (!currentContent.endsWith(fragment)) {
                                     responseContent.append(fragment);
                                 }
                             }
@@ -186,10 +187,11 @@ public class CustomOllamaService {
                                 }
                             }
 
+                            String finalContent = responseContent.toString();
+
                             if (bestToolCall != null && (bestToolCall.args() == null || bestToolCall.args().isEmpty())) {
                                 logger.info("Ollama tool call has empty args, trying fallback methods");
                                 
-                                String finalContent = responseContent.toString();
                                 List<ToolCall> extractedToolCalls = ToolParsing.extractToolCalls(finalContent);
                                 if (!extractedToolCalls.isEmpty()) {
                                     bestToolCall = extractedToolCalls.get(0);
@@ -206,7 +208,7 @@ public class CustomOllamaService {
                             }
                             
                             if (bestToolCall == null) {
-                                String finalContent = responseContent.toString();
+
                                 List<ToolCall> extractedToolCalls = ToolParsing.extractToolCalls(finalContent);
                                 if (!extractedToolCalls.isEmpty()) {
                                     bestToolCall = extractedToolCalls.get(0);
@@ -235,7 +237,7 @@ public class CustomOllamaService {
                             }
                             
                             if (detectedToolCalls.isEmpty()) {
-                                String finalContent = responseContent.toString();
+
                                 callback.accept(new com.beanvisionary.common.ChatResponse(
                                         requestId, userId, sessionId, finalContent,
                                         List.of(), List.of(), Instant.now()
@@ -243,8 +245,10 @@ public class CustomOllamaService {
                             }
                             break;
                         } else if (responseContent.length() > 0) {
+
+                            String partialContent = responseContent.toString();
                             callback.accept(new com.beanvisionary.common.ChatResponse(
-                                    requestId, userId, sessionId, "[partial] " + responseContent,
+                                    requestId, userId, sessionId, "[partial] " + partialContent,
                                     detectedToolCalls, List.of(), Instant.now()
                             ));
                         }
