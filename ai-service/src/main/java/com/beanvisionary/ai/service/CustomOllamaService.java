@@ -158,12 +158,20 @@ public class CustomOllamaService {
                         
                         String fragment = messageNode.path("content").asText("");
                         if (!fragment.isEmpty()) {
-                            String current = responseContent.toString();
-                            if (fragment.startsWith(current)) {
-                                String delta = fragment.substring(current.length());
-                                if (!delta.isEmpty()) responseContent.append(delta);
-                            } else if (!current.endsWith(fragment)) {
+                            // Optimize string operations to avoid repeated toString() calls
+                            int currentLength = responseContent.length();
+                            if (currentLength == 0) {
                                 responseContent.append(fragment);
+                            } else {
+                                String current = responseContent.toString();
+                                if (fragment.startsWith(current)) {
+                                    // Only append the new part (delta)
+                                    if (fragment.length() > currentLength) {
+                                        responseContent.append(fragment.substring(currentLength));
+                                    }
+                                } else if (!current.endsWith(fragment)) {
+                                    responseContent.append(fragment);
+                                }
                             }
                         }
                         

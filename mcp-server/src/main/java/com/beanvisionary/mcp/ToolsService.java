@@ -2,6 +2,8 @@ package com.beanvisionary.mcp;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -10,6 +12,8 @@ import java.util.*;
 
 @Service
 public class ToolsService {
+    private static final Logger logger = LoggerFactory.getLogger(ToolsService.class);
+    
     private final Map<String, Map<String, Object>> orders = new HashMap<>();
     private final List<String> sanctions = new ArrayList<>();
     private final SecureRandom rnd = new SecureRandom();
@@ -38,20 +42,20 @@ public class ToolsService {
     }
 
     public Map<String, Object> checkSanctions(String name) {
-        System.out.println("=== SANCTIONS CHECK DEBUG ===");
-        System.out.println("Input name: '" + name + "'");
-        System.out.println("Sanctions list: " + sanctions);
+        logger.debug("=== SANCTIONS CHECK DEBUG ===");
+        logger.debug("Input name: '{}'", name);
+        logger.debug("Sanctions list: {}", sanctions);
         
         boolean hit = Optional.ofNullable(name)
                 .map(String::toLowerCase)
                 .map(n -> {
-                    System.out.println("Lowercase name: '" + n + "'");
+                    logger.debug("Lowercase name: '{}'", n);
                     boolean foundMatch = sanctions.stream().anyMatch(s -> {
                         boolean contains = s.contains(n) || n.contains(s);
-                        System.out.println("Checking '" + s + "' against '" + n + "' -> " + contains);
+                        logger.debug("Checking '{}' against '{}' -> {}", s, n, contains);
                         return contains;
                     });
-                    System.out.println("Overall match result: " + foundMatch);
+                    logger.debug("Overall match result: {}", foundMatch);
                     return foundMatch;
                 })
                 .orElse(false);
@@ -61,8 +65,8 @@ public class ToolsService {
                 "score", hit ? 0.95 : 0.02,
                 "rule", hit ? "contains" : "no-hit"
         );
-        System.out.println("Final result: " + result);
-        System.out.println("=== END SANCTIONS CHECK DEBUG ===");
+        logger.debug("Final result: {}", result);
+        logger.debug("=== END SANCTIONS CHECK DEBUG ===");
         
         return result;
     }

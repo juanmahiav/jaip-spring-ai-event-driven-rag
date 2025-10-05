@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -21,21 +22,54 @@ import static com.beanvisionary.common.KafkaTopics.AI_TOOL_RESULTS;
 @Component
 public class ToolResultConsumer {
     private static final Logger logger = LoggerFactory.getLogger(ToolResultConsumer.class);
+    private static final long CLEANUP_INTERVAL_MS = 300_000; // 5 minutes
+    private static final long EXPIRATION_TIME_MS = 3600_000; // 1 hour
+    
     private final ChatClient chat;
     private final KafkaTemplate<String, ChatResponse> producer;
     
-    private final Map<String, Map<String, Object>> processedRequests = new ConcurrentHashMap<>();
+    // Store processed requests with timestamp for cleanup
+    private final Map<String, ProcessedRequestEntry> processedRequests = new ConcurrentHashMap<>();
     
-    private final Map<String, Map<String, String>> requestContext = new ConcurrentHashMap<>();
+    // Store request context with timestamp for cleanup
+    private final Map<String, RequestContextEntry> requestContext = new ConcurrentHashMap<>();
 
     public ToolResultConsumer(ChatClient chat, KafkaTemplate<String, ChatResponse> producer) {
         this.chat = chat;
         this.producer = producer;
     }
     
+    // Data classes for tracking entries with timestamps
+    private record ProcessedRequestEntry(Map<String, Object> result, long timestamp) {}
+    private record RequestContextEntry(String userId, String sessionId, long timestamp) {}
+    
     public void storeRequestContext(String requestId, String userId, String sessionId) {
-        requestContext.put(requestId, Map.of("userId", userId, "sessionId", sessionId));
+        requestContext.put(requestId, new RequestContextEntry(userId, sessionId, System.currentTimeMillis()));
         logger.info("Stored context for request {}: userId={}, sessionId={}", requestId, userId, sessionId);
+    }
+
+    // Scheduled cleanup task to prevent memory leaks
+    @Scheduled(fixedRate = CLEANUP_INTERVAL_MS)
+    public void cleanupExpiredEntries() {
+        long currentTime = System.currentTimeMillis();
+        long expirationThreshold = currentTime - EXPIRATION_TIME_MS;
+        
+        // Cleanup processed requests
+        int processedBefore = processedRequests.size();
+        processedRequests.entrySet().removeIf(entry -> 
+            entry.getValue().timestamp() < expirationThreshold);
+        int processedAfter = processedRequests.size();
+        
+        // Cleanup request contexts
+        int contextBefore = requestContext.size();
+        requestContext.entrySet().removeIf(entry -> 
+            entry.getValue().timestamp() < expirationThreshold);
+        int contextAfter = requestContext.size();
+        
+        if (processedBefore != processedAfter || contextBefore != contextAfter) {
+            logger.info("Cleanup completed: processedRequests {} -> {}, requestContext {} -> {}", 
+                       processedBefore, processedAfter, contextBefore, contextAfter);
+        }
     }
 
     @KafkaListener(topics = AI_TOOL_RESULTS, groupId = "ai-service")
@@ -75,9 +109,9 @@ public class ToolResultConsumer {
 
                 logger.info("Generated final answer for request {}: {}", requestId, finalAnswer);
 
-                Map<String, String> context = requestContext.get(requestId);
-                String userId = context != null ? context.get("userId") : "user-1";
-                String sessionId = context != null ? context.get("sessionId") : "session-1";
+                RequestContextEntry contextEntry = requestContext.get(requestId);
+                String userId = contextEntry != null ? contextEntry.userId() : "user-1";
+                String sessionId = contextEntry != null ? contextEntry.sessionId() : "session-1";
                 
                 if (userId == null) userId = "user-1";
                 if (sessionId == null) sessionId = "session-1";
@@ -92,7 +126,7 @@ public class ToolResultConsumer {
                 
                 requestContext.remove(requestId);
                 
-                processedRequests.put(requestId, result);
+                processedRequests.put(requestId, new ProcessedRequestEntry(result, System.currentTimeMillis()));
             } else {
                 logger.info("Skipping tool result for request {} (already have better result)", requestId);
             }
@@ -103,13 +137,14 @@ public class ToolResultConsumer {
     }
     
     private boolean shouldProcessResult(String requestId, Map<String, Object> newResult) {
-        Map<String, Object> existingResult = processedRequests.get(requestId);
+        ProcessedRequestEntry existingEntry = processedRequests.get(requestId);
         
-        if (existingResult == null) {
-
+        if (existingEntry == null) {
+            // No existing result, process this one
             return true;
         }
         
+        Map<String, Object> existingResult = existingEntry.result();
         double existingScore = getScore(existingResult);
         double newScore = getScore(newResult);
         
