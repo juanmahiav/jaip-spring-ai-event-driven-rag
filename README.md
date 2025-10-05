@@ -1,6 +1,5 @@
 # Spring AI Event-Driven RAG with Tools
 Date : Oct 06 · Version: v0.2.0
-Date: Aug 13 · Version: v0.1.0
 
 Event-driven microservices architecture built with Spring AI, Apache Kafka, and Ollama for Retrieval-Augmented Generation (RAG) plus tool execution via Model Context Protocol (MCP). Includes vector search (Qdrant), local LLM reasoning, and observability with Prometheus + Grafana.
 
