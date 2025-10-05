@@ -30,8 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.Map;
-import java.util.function.Consumer;
 
 @Service
 public class CustomOllamaService {
@@ -179,36 +177,11 @@ public class CustomOllamaService {
 
                             if (bestToolCall != null && (bestToolCall.args() == null || bestToolCall.args().isEmpty())) {
                                 logger.info("Ollama tool call has empty args, trying fallback methods");
-                                
-                                List<ToolCall> extractedToolCalls = ToolParsing.extractToolCalls(finalContent);
-                                if (!extractedToolCalls.isEmpty()) {
-                                    bestToolCall = extractedToolCalls.get(0);
-                                    logger.info("Using extracted tool call: {} with args: {}", bestToolCall.name(), bestToolCall.args());
-                                } else {
-
-                                    String query = extractUserQuery(ollamaMessages);
-                                    ToolCall suggestedTool = suggestToolForQuery(query);
-                                    if (suggestedTool != null) {
-                                        bestToolCall = suggestedTool;
-                                        logger.info("Using suggested tool call: {} with args: {}", bestToolCall.name(), bestToolCall.args());
-                                    }
-                                }
+                                bestToolCall = findFallbackToolCall(finalContent, ollamaMessages);
                             }
                             
                             if (bestToolCall == null) {
-
-                                List<ToolCall> extractedToolCalls = ToolParsing.extractToolCalls(finalContent);
-                                if (!extractedToolCalls.isEmpty()) {
-                                    bestToolCall = extractedToolCalls.get(0);
-                                    logger.info("Using extracted tool call: {} with args: {}", bestToolCall.name(), bestToolCall.args());
-                                } else {
-                                    String query = extractUserQuery(ollamaMessages);
-                                    ToolCall suggestedTool = suggestToolForQuery(query);
-                                    if (suggestedTool != null) {
-                                        bestToolCall = suggestedTool;
-                                        logger.info("Using suggested tool call: {} with args: {}", bestToolCall.name(), bestToolCall.args());
-                                    }
-                                }
+                                bestToolCall = findFallbackToolCall(finalContent, ollamaMessages);
                             }
 
                             if (bestToolCall != null) {
@@ -448,5 +421,35 @@ public class CustomOllamaService {
                 }
             }
         }
+    }
+
+    /**
+     * Attempts to find a tool call using fallback methods when primary detection fails.
+     * 
+     * This method tries two approaches in sequence:
+     * 1. Extract tool calls from the response content using ToolParsing
+     * 2. Suggest a tool based on the user query analysis
+     * 
+     * @param finalContent The final response content to parse for tool calls
+     * @param ollamaMessages The conversation messages to extract user query from
+     * @return A ToolCall if found, null otherwise
+     */
+    private ToolCall findFallbackToolCall(String finalContent, List<Map<String, Object>> ollamaMessages) {
+
+        List<ToolCall> extractedToolCalls = ToolParsing.extractToolCalls(finalContent);
+        if (!extractedToolCalls.isEmpty()) {
+            ToolCall toolCall = extractedToolCalls.get(0);
+            logger.info("Using extracted tool call: {} with args: {}", toolCall.name(), toolCall.args());
+            return toolCall;
+        }
+
+        String query = extractUserQuery(ollamaMessages);
+        ToolCall suggestedTool = suggestToolForQuery(query);
+        if (suggestedTool != null) {
+            logger.info("Using suggested tool call: {} with args: {}", suggestedTool.name(), suggestedTool.args());
+            return suggestedTool;
+        }
+        
+        return null;
     }
 }
