@@ -24,6 +24,14 @@ import static com.beanvisionary.common.KafkaTopics.AI_TOOL_RESULTS;
 public class ToolResultConsumer {
     private static final Logger logger = LoggerFactory.getLogger(ToolResultConsumer.class);
     
+    private static final String SANCTIONS_MATCH_TEMPLATE = 
+            "**SANCTIONS MATCH FOUND**: Customer is on the sanctions list (Rule: %s, Confidence: %.0f%%). " +
+            "Transaction must be blocked and compliance team notified immediately.";
+    
+    private static final String SANCTIONS_NO_MATCH_TEMPLATE = 
+            "**NO SANCTIONS MATCH**: Customer is not on any sanctions list (Rule: %s, Confidence: %.0f%%). " +
+            "Transaction may proceed.";
+    
     private final long cleanupIntervalMs;
     private final long expirationTimeMs;
     private final ChatClient chat;
@@ -172,11 +180,13 @@ public class ToolResultConsumer {
                 double score = scoreObj instanceof Number ? ((Number) scoreObj).doubleValue() : 0.0;
                 
                 if (match != null && match) {
-                    return String.format("**SANCTIONS MATCH FOUND**: Customer is on the sanctions list (Rule: %s, Confidence: %.0f%%). Transaction must be blocked and compliance team notified immediately.", 
-                                       rule != null ? rule : "unknown", score * 100);
+                    return String.format(SANCTIONS_MATCH_TEMPLATE, 
+                                       rule != null ? rule : "unknown", 
+                                       score * 100);
                 } else {
-                    return String.format("**NO SANCTIONS MATCH**: Customer is not on any sanctions list (Rule: %s, Confidence: %.0f%%). Transaction may proceed.", 
-                                       rule != null ? rule : "unknown", score * 100);
+                    return String.format(SANCTIONS_NO_MATCH_TEMPLATE, 
+                                       rule != null ? rule : "unknown", 
+                                       score * 100);
                 }
                 
             case "lookupOrder":

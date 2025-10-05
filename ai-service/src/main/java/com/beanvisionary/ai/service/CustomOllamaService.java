@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.Map;
+import java.util.function.Consumer;
 
 @Service
 public class CustomOllamaService {
@@ -159,24 +161,7 @@ public class CustomOllamaService {
                         
                         String fragment = messageNode.path("content").asText("");
                         if (!fragment.isEmpty()) {
-
-                            int currentLength = responseContent.length();
-                            if (currentLength == 0) {
-                                responseContent.append(fragment);
-                            } else {
-
-                                // Avoid repeated toString() calls by comparing directly with StringBuilder content
-                                if (fragment.length() >= currentLength &&
-                                        fragment.regionMatches(0, responseContent, 0, currentLength)) {
-
-                                    if (fragment.length() > currentLength) {
-                                        responseContent.append(fragment.substring(currentLength));
-                                    }
-                                } else if (!(currentLength >= fragment.length() &&
-                                        responseContent.subSequence(currentLength - fragment.length(), currentLength).equals(fragment))) {
-                                    responseContent.append(fragment);
-                                }
-                            }
+                            appendContentFragment(responseContent, fragment);
                         }
                         
                         if (done) {
@@ -422,5 +407,46 @@ public class CustomOllamaService {
             }
         }
         return null;
+    }
+
+    /**
+     * Appends a content fragment to the response builder with intelligent deduplication.
+     * 
+     * This method handles three scenarios:
+     * 1. Empty response: Simply append the fragment
+     * 2. Fragment contains current response as prefix: Append only the new part
+     * 3. Fragment is not a duplicate suffix: Append the entire fragment
+     * 
+     * The deduplication prevents streaming responses from showing repeated content
+     * when the AI model sends overlapping text fragments.
+     * 
+     * @param responseContent The StringBuilder containing the accumulated response
+     * @param fragment The new content fragment to potentially append
+     */
+    private void appendContentFragment(StringBuilder responseContent, String fragment) {
+        int currentLength = responseContent.length();
+        
+        if (currentLength == 0) {
+
+            responseContent.append(fragment);
+        } else {
+
+            if (fragment.length() >= currentLength &&
+                    fragment.regionMatches(0, responseContent, 0, currentLength)) {
+
+                if (fragment.length() > currentLength) {
+                    responseContent.append(fragment.substring(currentLength));
+                }
+            } else {
+
+                boolean isDuplicateSuffix = currentLength >= fragment.length() &&
+                        responseContent.subSequence(currentLength - fragment.length(), currentLength).equals(fragment);
+                
+                if (!isDuplicateSuffix) {
+
+                    responseContent.append(fragment);
+                }
+            }
+        }
     }
 }
